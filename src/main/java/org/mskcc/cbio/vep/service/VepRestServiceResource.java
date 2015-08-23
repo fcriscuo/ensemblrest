@@ -17,7 +17,7 @@ import javax.ws.rs.core.MediaType;
 @Path("/vep")
 @Produces(MediaType.APPLICATION_JSON)
 public class VepRestServiceResource {
-    //private static final Logger logger = Logger.getLogger(VepRestServiceResource.class);
+    private static final Logger logger = Logger.getLogger(VepRestServiceResource.class);
     private final String template1;
     private final String template2;
     private final String defaultHgvs;
@@ -35,6 +35,7 @@ public class VepRestServiceResource {
     @Timed
     public VepAnnotation annotate (@QueryParam("hgvs")Optional<String> hgvsOpt){
         if (hgvsOpt.isPresent()){
+            logger.info(service.resolveVEPByGenomicLocation(hgvsOpt.get()));
             return new VepAnnotation(hgvsOpt.get(), service.resolveVEPByGenomicLocation(hgvsOpt.get()));
         }
 

@@ -1,7 +1,7 @@
 package org.mskcc.cbio.vep.data;
 
-import com.google.api.client.repackaged.com.google.common.base.Preconditions;
-import com.google.api.client.repackaged.com.google.common.base.Strings;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.base.Optional;
 import org.apache.log4j.Logger;
 import org.mskcc.cbio.ensemblrest.EnsemblRestService;

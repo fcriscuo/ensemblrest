@@ -1,0 +1,4 @@
+template1: Variation:%s
+template2: Annotation:%s
+defaultHgv: Invalid
+defaultResponse: Unavailable

@@ -1,6 +1,6 @@
 package org.mskcc.cbio.vep.data;
 
-import com.google.api.client.util.Lists;
+
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
@@ -86,7 +86,7 @@ public class MafFileProcessor {
     }
 
     public static void main(String...args){
-        Path filePath = Paths.get("/tmp/icgctest/brca/icgc/uk/data_mutations_extended.txt");
+        Path filePath = Paths.get("/tmp/data_mutations_extended.txt");
         MafFileProcessor processor = new MafFileProcessor(filePath);
         Stopwatch sw = Stopwatch.createStarted();
         int count = 0;

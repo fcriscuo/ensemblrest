@@ -81,8 +81,8 @@ public class AnnotateCvrMutations {
                            .subscribe(new Action1<SnpIndelExonic>() {
                                @Override
                                public void call(SnpIndelExonic snpIndelExonic) {
-
-                                   Optional<Vep> vepOpt = VepAnnotationServiceClient.annotateVariation(resolveHgvsVariation(snpIndelExonic));
+                                   // standardize on genomic based variation string
+                                   Optional<Vep> vepOpt = VepAnnotationServiceClient.annotateVariation(resolveGenomicVariationString(snpIndelExonic));
                                    if(vepOpt.isPresent()){
                                        logger.info(sampleId +" " + vepOpt.toString());
                                    }
@@ -98,17 +98,21 @@ public class AnnotateCvrMutations {
         }
 
     }
+
     /*
-    Private method to format the mutation in HGVS format. Some of the CVR mutations
-    are relative to cDNA, while others are relative to genomic DNA
+    Private method to format the mutation into HGVS format using chromosomal positions and
+    reference and tumor alleles
+    This method should prove more consistent than using the cDNA change
+    ensembl Web service accepts endPosition = startPosition
      */
-    private String resolveHgvsVariation(SnpIndelExonic snp){
-        if(snp.getCDNAChange().startsWith("c.")) {
-            return snp.getGeneId().toUpperCase() +":" + snp.getCDNAChange();
-        }
-        return snp.getChromosome() +":g." + snp.getStartPosition()
-                +snp.getRefAllele() +">"+snp.getAltAllele();
+    private String resolveGenomicVariationString(SnpIndelExonic snp) {
+        Integer endPosition = snp.getStartPosition() + snp.getRefAllele().length() -1;
+        return snp.getChromosome() +":g." + snp.getStartPosition() + "_"
+                +endPosition +snp.getRefAllele() +">"
+                +snp.getAltAllele();
     }
+
+
     /*
     main method accepts the full name of a JSON file withe CVR data
      */

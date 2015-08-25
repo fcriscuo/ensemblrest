@@ -45,6 +45,12 @@ import java.util.concurrent.TimeUnit;
  * Created by Fred Criscuolo on 4/12/15.
  * criscuof@mskcc.org
  */
+/*
+Represents a Java application that will read in a somatic mutation file in MAF format
+and invoke the remote ensembl VEP Web service for mutation annotation. Primary purpose is
+test the reliability and performance of using the remote ensembl service to annotate
+large MAF files.
+ */
 public class MafFileProcessor {
     private static final Logger logger = Logger.getLogger(MafFileProcessor.class);
     private final Path mafFilePath;
@@ -86,8 +92,12 @@ public class MafFileProcessor {
     }
 
     public static void main(String...args){
-        Path filePath = Paths.get("/tmp/data_mutations_extended.txt");
+        if (args.length < 1){
+            args = new String[]{"/tmp/data_mutations_extended.txt"}; // default value
+        }
+        Path filePath = Paths.get(args[0]);
         MafFileProcessor processor = new MafFileProcessor(filePath);
+        // time VEP processing and count the number of somatic mutations annotated
         Stopwatch sw = Stopwatch.createStarted();
         int count = 0;
         for (String s : processor.generateJsonList()){

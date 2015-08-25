@@ -3,13 +3,20 @@ package org.mskcc.cbio.vep.service;
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.apache.log4j.Logger;
 
 /**
  * Created by fcriscuo on 8/22/15.
  */
 public class VepServiceApplication extends Application<VepRestServiceConfiguration> {
-   // private static final Logger logger = Logger.getLogger(VepRestService.class);
+    private static final Logger logger = Logger.getLogger(VepServiceApplication.class);
+
+    public VepServiceApplication() {}
     public static void main(String... args) {
+
+        if(args.length < 2 ) {
+            args = new String[]{"server", "vep.yml"};
+        }
         try {
             new VepServiceApplication().run(args);
         } catch (Exception e) {

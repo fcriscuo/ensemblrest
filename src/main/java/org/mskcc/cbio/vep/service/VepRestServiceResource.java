@@ -33,15 +33,16 @@ public class VepRestServiceResource {
     }
     @GET
     @Timed
-    public VepAnnotation annotate (@QueryParam("hgvs")Optional<String> hgvsOpt){
+    public VepAnnotationString annotate (@QueryParam("hgvs")Optional<String> hgvsOpt){
         if (hgvsOpt.isPresent()){
             logger.info(service.resolveVEPByGenomicLocation(hgvsOpt.get()));
-            return new VepAnnotation(hgvsOpt.get(), service.resolveVEPByGenomicLocation(hgvsOpt.get()));
+
+            return new VepAnnotationString(hgvsOpt.get(), service.resolveVEPByGenomicLocation(hgvsOpt.get()));
         }
 
         final String value1 = String.format(this.template1,defaultHgvs);
         final String value2 = String.format(this.template2,defaultResponse);
-        return new VepAnnotation(value1, value2);
+        return new VepAnnotationString(value1, value2);
     }
 
 

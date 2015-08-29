@@ -66,14 +66,11 @@ public class AnnotateCvrMutations {
             resultObservable.subscribe(new Subscriber<Result>() {
                 @Override
                 public void onCompleted() {
-
                 }
-
                 @Override
                 public void onError(Throwable throwable) {
                     logger.error(throwable.getMessage());
                 }
-
                 @Override
                 public void onNext(Result result) {
                     final String sampleId = result.getMetaData().getDmpSampleId();

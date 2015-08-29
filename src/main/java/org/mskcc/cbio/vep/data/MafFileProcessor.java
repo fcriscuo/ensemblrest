@@ -62,11 +62,17 @@ public class MafFileProcessor {
         this.mafFilePath = aPath;
     }
 
+    /*
+    Read in mutation records from a file in MAF format, filter out non-SNP variants,
+    use MAF record attributes to create a variation in HGVS format, and invoke VEP
+    annotation.
+     */
     List<String> generateJsonList() {
         try (BufferedReader reader = Files.newBufferedReader(this.mafFilePath, Charset.defaultCharset())) {
             final CSVParser parser = new CSVParser(reader, CSVFormat.TDF.withHeader().withCommentMarker('#'));
             final VepAnnotator annotator = new VepAnnotator();
-            Function<CSVRecord, String> transformationFunction = HGVSVariationFormatFunctionCollection.INSTANCE.snpFormatFunction();
+            Function<CSVRecord, String> transformationFunction = HGVSVariationFormatFunctionCollection
+                    .INSTANCE.snpFormatFunction();
             return FluentIterable.from(parser)
                     .filter(new Predicate<CSVRecord>() {
                         @Override
@@ -83,7 +89,6 @@ public class MafFileProcessor {
                         }
                     })
                     .toList();
-
         } catch (Exception e) {
             logger.error(e.getMessage());
             e.printStackTrace();

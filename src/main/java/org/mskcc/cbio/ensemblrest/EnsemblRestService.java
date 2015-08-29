@@ -6,7 +6,6 @@ import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -90,7 +89,7 @@ returns resultS IN JSON FORMAT
         System.out.println(service.resolveVEPByGenomicLocation(genomicLocation1));
         String genomicLocation2 = "10:g.42936755A>C";
         System.out.println(service.resolveVEPByGenomicLocation(genomicLocation2));
-        String genomicLocation3 = "7:g.140453999G>T";
+        String genomicLocation3 = "MLL2:c.16022C>A";
         System.out.println(service.resolveVEPByGenomicLocation(genomicLocation3));
     }
 }

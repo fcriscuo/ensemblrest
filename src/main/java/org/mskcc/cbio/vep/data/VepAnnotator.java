@@ -32,6 +32,14 @@ import java.util.List;
  * Created by Fred Criscuolo on 4/12/15.
  * criscuof@mskcc.org
  */
+/*
+Java class that supports VEP annotation of a somatic mutation in HGVS format. Upon receiving
+a mutation, an underlying database is queried to determine if a VEP annotation already exists
+for that mutation. If so, the persisted data is returned. If not, the remote ensembl RESTful
+annotation service is invoked, the novel mutation and annotation are inserted into the database,
+and the annotation is returned in JSON format
+TODO: convert to Singleton service (i.e. enum)
+ */
 public class VepAnnotator {
     private static final Logger logger = Logger.getLogger(VepAnnotator.class);
     private final EnsemblRestService service = new EnsemblRestService();
@@ -40,7 +48,7 @@ public class VepAnnotator {
 
 
     public VepAnnotator() {
-
+        // instantiate myBatis components for mySQL access
         this.cacheMapper = VEPSessionManager.INSTANCE.getVepSession().getMapper(VepJsonCacheMapper.class);
         this.cacheExample = new VepJsonCacheExample();
     }
@@ -62,6 +70,10 @@ public class VepAnnotator {
         return annotation;
     }
 
+    /*
+    Private method to persist HGVS variation string (PK) and VEP annotation into
+    a mySQL database
+     */
     private void insertAnnotationIntoDatabase(String variation, String json){
         if(Strings.isNullOrEmpty(json)){
             logger.info("No annotation for " +variation);
@@ -73,6 +85,10 @@ public class VepAnnotator {
         VEPSessionManager.INSTANCE.getVepSession().commit();
         logger.info("====> variation " +variation +" inserted into database");
     }
+    /*
+    Private method to query a mySQL database for a HGVS variation.
+    Uses myBatis as an ORM
+     */
         private Optional<String> findAnnotationInDatabase(String variation){
         this.cacheExample.clear();
         this.cacheExample.createCriteria().andCACHE_KEYEqualTo(variation);
@@ -88,6 +104,9 @@ public class VepAnnotator {
             return Optional.absent();
     }
 
+    /*
+    Private method to delete a variation from the mySQL database using myBatis
+     */
     private void deleteRow(String variation){
         this.cacheExample.clear();
         this.cacheExample.createCriteria().andCACHE_KEYEqualTo(variation);

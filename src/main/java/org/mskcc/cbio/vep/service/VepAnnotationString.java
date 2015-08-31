@@ -5,14 +5,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * Created by fcriscuo on 8/22/15.
  */
-public class VepAnnotation {
+public class VepAnnotationString {
     private String variation;
     private String annotation;
 
+    public VepAnnotationString(){}
 
-    public VepAnnotation(){}
-
-    public VepAnnotation(String variation, String annotation){
+    public VepAnnotationString(String variation, String annotation){
         this.variation = variation;
         this.annotation = annotation;
     }

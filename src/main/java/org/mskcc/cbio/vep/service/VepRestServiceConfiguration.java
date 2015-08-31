@@ -8,6 +8,8 @@ import org.hibernate.validator.constraints.NotEmpty;
  */
 public class VepRestServiceConfiguration extends Configuration {
 
+    public VepRestServiceConfiguration() {}
+
     @NotEmpty
     private String template1 =" ";
     @NotEmpty
@@ -35,7 +37,7 @@ public class VepRestServiceConfiguration extends Configuration {
 
     @JsonProperty
     public String getDefaultResponse() {return this.defaultResponse;}
-    public void setDefaultResponse(String defaultResponse ) { this.defaultHgvs = defaultResponse;}
+    public void setDefaultResponse(String defaultResponse ) { this.defaultResponse = defaultResponse;}
 
 }
 

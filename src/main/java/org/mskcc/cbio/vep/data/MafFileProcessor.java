@@ -44,6 +44,12 @@ import java.util.concurrent.TimeUnit;
  * Created by Fred Criscuolo on 4/12/15.
  * criscuof@mskcc.org
  */
+/*
+Represents a Java application that will read in a somatic mutation file in MAF format
+and invoke the remote ensembl VEP Web service for mutation annotation. Primary purpose is
+test the reliability and performance of using the remote ensembl service to annotate
+large MAF files.
+ */
 public class MafFileProcessor {
     private static final Logger logger = Logger.getLogger(MafFileProcessor.class);
     private final Path mafFilePath;
@@ -55,11 +61,17 @@ public class MafFileProcessor {
         this.mafFilePath = aPath;
     }
 
+    /*
+    Read in mutation records from a file in MAF format, filter out non-SNP variants,
+    use MAF record attributes to create a variation in HGVS format, and invoke VEP
+    annotation.
+     */
     List<String> generateJsonList() {
         try (BufferedReader reader = Files.newBufferedReader(this.mafFilePath, Charset.defaultCharset())) {
             final CSVParser parser = new CSVParser(reader, CSVFormat.TDF.withHeader().withCommentMarker('#'));
             final VepAnnotator annotator = new VepAnnotator();
-            Function<CSVRecord, String> transformationFunction = HGVSVariationFormatFunctionCollection.INSTANCE.snpFormatFunction();
+            Function<CSVRecord, String> transformationFunction = HGVSVariationFormatFunctionCollection
+                    .INSTANCE.snpFormatFunction();
             return FluentIterable.from(parser)
                     .filter(new Predicate<CSVRecord>() {
                         @Override
@@ -76,7 +88,6 @@ public class MafFileProcessor {
                         }
                     })
                     .toList();
-
         } catch (Exception e) {
             logger.error(e.getMessage());
             e.printStackTrace();
@@ -85,8 +96,12 @@ public class MafFileProcessor {
     }
 
     public static void main(String...args){
-        Path filePath = Paths.get("/tmp/data_mutations_extended.txt");
+        if (args.length < 1){
+            args = new String[]{"/tmp/data_mutations_extended.txt"}; // default value
+        }
+        Path filePath = Paths.get(args[0]);
         MafFileProcessor processor = new MafFileProcessor(filePath);
+        // time VEP processing and count the number of somatic mutations annotated
         Stopwatch sw = Stopwatch.createStarted();
         int count = 0;
         for (String s : processor.generateJsonList()){

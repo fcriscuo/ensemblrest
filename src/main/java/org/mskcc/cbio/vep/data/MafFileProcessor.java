@@ -10,7 +10,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.log4j.Logger;
-import org.mskcc.cbio.ensemblrest.EnsemblRestService;
 import org.mskcc.cbio.vep.model.HGVSVariationFormatFunctionCollection;
 
 

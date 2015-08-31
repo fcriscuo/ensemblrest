@@ -9,6 +9,7 @@ public class VepAnnotation {
     private String variation;
     private String annotation;
 
+
     public VepAnnotation(){}
 
     public VepAnnotation(String variation, String annotation){
@@ -21,5 +22,7 @@ public class VepAnnotation {
 
     @JsonProperty
     public String getAnnotation() { return this.annotation;}
+
+
 
 }

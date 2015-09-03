@@ -3,8 +3,13 @@ package org.mskcc.cbio.reactive.subject;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
+import feign.*;
+import feign.codec.Decoder;
+import feign.codec.ErrorDecoder;
+import feign.gson.GsonDecoder;
 import org.apache.log4j.Logger;
 import org.mskcc.cbio.vep.model.AnnotatorServiceMessage;
+import org.mskcc.cbio.vep.model.json.Annotation;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
@@ -14,6 +19,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
 
 /**
  * Created by fcriscuo on 8/30/15.
@@ -30,49 +36,59 @@ public enum EnsemblRestServiceSubject {
                 "A variation is required");
         subject().onNext(AnnotatorServiceMessage.AnnotationMessage.create(variation, isoform,
                 this.invokeEnsemblVepAnnotation(variation)));
-
     }
 
-    private String invokeEnsemblVepAnnotation(String variation) {
-        try {
-            URL url = new URL(ENSEMBL_URL_TEMPLATE.replace("GENPOS",variation));
-            URLConnection connection = url.openConnection();
-            HttpURLConnection httpConnection = (HttpURLConnection) connection;
-            httpConnection.setRequestProperty("Content-Type", "application/json");
-            InputStream response = connection.getInputStream();
-            int responseCode = httpConnection.getResponseCode();
-            if(responseCode != 200) {
-                if(responseCode == 429 && httpConnection.getHeaderField("Retry-After") != null) {
-                    double sleepFloatingPoint = Double.valueOf(httpConnection.getHeaderField("Retry-After"));
-                    double sleepMillis = 1000 * sleepFloatingPoint;
-                    Thread.sleep((long)sleepMillis);
-                    return invokeEnsemblVepAnnotation(variation);
-                }
-                logger.error("Response code was not 200. Detected response was " + responseCode +
-                        " for genomic location: " + variation);
+    /*
+    private method to invoke ensembl REST service to annotate a genomic variation in HGVS format
+     */
+    private Annotation invokeEnsemblVepAnnotation(String variation) {
+
+            Decoder decoder = new GsonDecoder();
+            Ensembl ensembl = Feign.builder()
+                    .decoder(decoder)
+                    .errorDecoder(new VepErrorDecoder(decoder))
+                    .logger(new feign.Logger.ErrorLogger())
+                    .logLevel(feign.Logger.Level.BASIC)
+                    .target(Ensembl.class, ENSEMBL_URL);
+
+            List<Annotation> annotations = ensembl.annotations(variation);
+            if (annotations.size() > 0 ){
+                return annotations.get(0);
             }
 
-            try(Reader reader  = new BufferedReader(new InputStreamReader(response, "UTF-8"))) {
-                StringBuilder builder = new StringBuilder();
-                char[] buffer = new char[8192];
-                int read;
-                while ((read = reader.read(buffer, 0, buffer.length)) > 0) {
-                    builder.append(buffer, 0, read);
-                }
+        return null;
+    }
 
-                return builder.toString();
+    public static final String ENSEMBL_URL ="http://grch37.rest.ensembl.org";
+    public interface Ensembl {
+        @RequestLine("GET /vep/human/hgvs/{genepos}/?content-type=application/json")
+        @Headers("Content-Type: application/json")
+        List<Annotation> annotations(@Param("genepos") String genepos);
+    }
 
-            } catch (IOException ex) {
-                logger.error(ex.getMessage());
-            }
-
-        } catch ( InterruptedException |IOException e) {
-            logger.error(e.getMessage());
-            e.printStackTrace();
+    static class VepClientError extends RuntimeException {
+        private String message; // parsed from json
+        @Override
+        public String getMessage() {
+            return message;
         }
-        return "";
     }
 
+    static class VepErrorDecoder implements ErrorDecoder {
+        final Decoder decoder;
+        final ErrorDecoder defaultDecoder = new Default();
+        VepErrorDecoder(Decoder decoder) {
+            this.decoder = decoder;
+        }
+        @Override
+        public Exception decode(String methodKey, Response response) {
+            try {
+                return (Exception) decoder.decode(response, VepClientError.class);
+            } catch (IOException fallbackToDefault) {
+                return defaultDecoder.decode(methodKey, response);
+            }
+        }
+    }
     public static void main (String...args){
         EnsemblRestServiceSubject.INSTANCE.subject().subscribe(new Action1<AnnotatorServiceMessage.AnnotationMessage>() {
             @Override

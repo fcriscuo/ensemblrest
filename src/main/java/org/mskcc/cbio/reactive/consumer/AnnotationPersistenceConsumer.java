@@ -45,9 +45,9 @@ public class AnnotationPersistenceConsumer {
             @Override
             public void onNext(AnnotatorServiceMessage.AnnotationMessage annotationMessage) {
                 // verify that the variation was annotated successfully
-                if(!Strings.isNullOrEmpty(annotationMessage.vepAnnotation())){
+                if(!Strings.isNullOrEmpty(annotationMessage.vepAnnotation().toString())){
                     AnnotationDatabaseService.INSTANCE.insertAnnotationIntoDatabase(annotationMessage.hgvsVariation(),
-                            annotationMessage.vepAnnotation());
+                            annotationMessage.vepAnnotation().toString());
                     logger.info("Annotation for variation " +annotationMessage.hgvsVariation() +" inserted into database");
                 }
             }

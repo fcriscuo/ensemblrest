@@ -58,7 +58,7 @@ public class FeignVepService {
                 .logger(new Logger.ErrorLogger())
                 .logLevel(Logger.Level.BASIC)
                 .target(Ensembl.class, ENSEMBL_URL);
-        String testVariation = "7:g.138269675A>G";
+        String testVariation = "17:g.41270062G>A";
         List<Annotation> annotations = ensembl.annotations(testVariation);
        for(Annotation annotation : annotations){
            System.out.println(annotation.toString());

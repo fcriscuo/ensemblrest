@@ -10,7 +10,12 @@ import feign.gson.GsonDecoder;
 import org.apache.log4j.Logger;
 import org.mskcc.cbio.vep.model.AnnotatorServiceMessage;
 import org.mskcc.cbio.vep.model.json.Annotation;
+import rx.Observable;
+import rx.Scheduler;
+import rx.Subscriber;
+import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
@@ -20,6 +25,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
+
 
 /**
  * Created by fcriscuo on 8/30/15.
@@ -94,13 +100,43 @@ public enum EnsemblRestServiceSubject {
             @Override
             public void call(AnnotatorServiceMessage.AnnotationMessage message) {
                 logger.info("====> variation " + message.hgvsVariation() +" annotation " +message.vepAnnotation());
+
+
             }
         });
+        Observable<AnnotatorServiceMessage.AnnotationMessage> obs1 = EnsemblRestServiceSubject.INSTANCE.subject();
+
+
+        obs1.subscribe(new Subscriber<AnnotatorServiceMessage.AnnotationMessage>() {
+                           @Override
+                           public void onCompleted() {
+                               logger.info("Completed");
+                           }
+
+                           @Override
+                           public void onError(Throwable throwable) {
+                                logger.error(throwable.getMessage());
+                           }
+
+                           @Override
+                           public void onNext(final AnnotatorServiceMessage.AnnotationMessage message) {
+                               Scheduler.Worker worker = Schedulers.newThread().createWorker();
+                               worker.schedule(new Action0() {
+                                   @Override
+                                   public void call() {
+                                       logger.info("====> " + message.hgvsVariation() + " " + message.vepAnnotation().getAlleleString());
+
+                                   }
+                               });
+
+                           }
+                       });
+
+
         EnsemblRestServiceSubject.INSTANCE.ensemblVepAnnotation("17:g.41270062G>A",null);
         EnsemblRestServiceSubject.INSTANCE.ensemblVepAnnotation("10:g.42936755A>C",null);
         EnsemblRestServiceSubject.INSTANCE.ensemblVepAnnotation("7:g.140453999G>T",null);
-
-
+        EnsemblRestServiceSubject.INSTANCE.subject().onCompleted();
 
     }
 

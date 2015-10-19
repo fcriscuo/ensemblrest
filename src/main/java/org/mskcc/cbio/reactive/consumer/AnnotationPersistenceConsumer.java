@@ -4,8 +4,12 @@ import com.google.common.base.Strings;
 import org.apache.log4j.Logger;
 import org.mskcc.cbio.reactive.subject.EnsemblRestServiceSubject;
 import org.mskcc.cbio.vep.database.AnnotationDatabaseService;
+import org.mskcc.cbio.vep.database.dao.VepAnnotation;
 import org.mskcc.cbio.vep.model.AnnotatorServiceMessage;
+import rx.Scheduler;
 import rx.Subscriber;
+import rx.functions.Action0;
+import rx.schedulers.Schedulers;
 import rx.subjects.Subject;
 
 /**
@@ -39,17 +43,26 @@ public class AnnotationPersistenceConsumer {
                 logger.error(throwable.getMessage());
                 throwable.printStackTrace();
             }
+
             /*
             Insert variation and annotation into database
              */
             @Override
             public void onNext(AnnotatorServiceMessage.AnnotationMessage annotationMessage) {
-                // verify that the variation was annotated successfully
-                if(!Strings.isNullOrEmpty(annotationMessage.vepAnnotation().toString())){
-                    AnnotationDatabaseService.INSTANCE.insertAnnotationIntoDatabase(annotationMessage.hgvsVariation(),
-                            annotationMessage.vepAnnotation().toString());
-                    logger.info("Annotation for variation " +annotationMessage.hgvsVariation() +" inserted into database");
-                }
+                Scheduler.Worker worker = Schedulers.io().createWorker();  // run the insert on the I/O thread pool
+                worker.schedule(new Action0() {
+                    @Override
+                    public void call() {
+                        if(!Strings.isNullOrEmpty(annotationMessage.vepAnnotation().toString())){
+                            AnnotationDatabaseService.INSTANCE.insertAnnotationIntoDatabase(new VepAnnotation(annotationMessage.hgvsVariation(),
+                                    annotationMessage.vepAnnotation().toString()));
+                            logger.info("Annotation for variation " +annotationMessage.hgvsVariation() +" inserted into database");
+                        }
+
+                    }
+                });
+
+
             }
         });
     }

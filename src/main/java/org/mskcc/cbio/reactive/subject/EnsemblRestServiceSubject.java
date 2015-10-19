@@ -35,7 +35,31 @@ public enum EnsemblRestServiceSubject {
     private final static Logger logger = Logger.getLogger(EnsemblRestServiceSubject.class);
     final PublishSubject<AnnotatorServiceMessage.AnnotationMessage> ensemblRestSubject = PublishSubject.create();
     private static final String ENSEMBL_URL_TEMPLATE = "http://grch37.rest.ensembl.org/vep/human/hgvs/GENPOS?";
-    public Subject subject() { return this.ensemblRestSubject;}
+
+    public Subject subject() {
+        return this.ensemblRestSubject;
+    }
+
+    /*
+    subscribe to VariationQueryServiceSubject
+     */
+    public void init() {
+        Observable<AnnotatorServiceMessage.AnnotationMessage> messageObs = VariationQueryServiceSubject.INSTANCE.subject();
+        messageObs.subscribe(new Action1<AnnotatorServiceMessage.AnnotationMessage>() {
+            @Override
+            public void call(AnnotatorServiceMessage.AnnotationMessage message) {
+                if (message.vepAnnotation() == null){
+                    ensemblVepAnnotation(message.hgvsVariation(), message.isoformId());
+                    logger.info("Invoking ensembl VEP annotation for " +message.hgvsVariation());
+                } else {
+                    logger.info("Annotation for " +message.hgvsVariation() +" was found in database");
+                }
+            }
+        });
+    }
+
+
+
 
     public void ensemblVepAnnotation(String variation, @Nullable String isoform) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(variation),
@@ -99,7 +123,7 @@ public enum EnsemblRestServiceSubject {
         EnsemblRestServiceSubject.INSTANCE.subject().subscribe(new Action1<AnnotatorServiceMessage.AnnotationMessage>() {
             @Override
             public void call(AnnotatorServiceMessage.AnnotationMessage message) {
-                logger.info("====> variation " + message.hgvsVariation() +" annotation " +message.vepAnnotation());
+                logger.info("====> variation " + message.hgvsVariation() +" allele  " +message.vepAnnotation().getAlleleString());
 
 
             }
@@ -124,7 +148,7 @@ public enum EnsemblRestServiceSubject {
                                worker.schedule(new Action0() {
                                    @Override
                                    public void call() {
-                                       logger.info("====> " + message.hgvsVariation() + " " + message.vepAnnotation().getAlleleString());
+                                       logger.info("====> " + message.hgvsVariation() + " " + message.vepAnnotation());
 
                                    }
                                });

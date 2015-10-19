@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import org.apache.log4j.Logger;
 import org.mskcc.cbio.vep.database.AnnotationDatabaseService;
+import org.mskcc.cbio.vep.database.dao.VepAnnotation;
 import org.mskcc.cbio.vep.model.AnnotatorServiceMessage;
 import org.mskcc.cbio.vep.model.json.Annotation;
 import rx.Observable;
@@ -28,11 +29,11 @@ public enum VariationQueryServiceSubject {
 
     public void queryVariationDatabase(String variation, @Nullable String isoform){
         // query local variation database
-        Optional<String> annotationOpt = AnnotationDatabaseService.INSTANCE.findAnnotationInDatabase(variation);
+        Optional<VepAnnotation> annotationOpt = AnnotationDatabaseService.INSTANCE.findAnnotationInDatabase(variation);
         AnnotatorServiceMessage.AnnotationMessage message= null;
         try {
             if (annotationOpt.isPresent()){
-                Annotation annotation = objectMapper.readValue(annotationOpt.get(), Annotation.class);
+                Annotation annotation = objectMapper.readValue(annotationOpt.get().getAnnotation(), Annotation.class);
                 message = AnnotatorServiceMessage.AnnotationMessage.create(variation, isoform, annotation);
             } else {
                 message = AnnotatorServiceMessage.AnnotationMessage.create(variation, isoform,null);
@@ -66,18 +67,9 @@ public enum VariationQueryServiceSubject {
         });
 
 
-
-
-     //   VariationQueryServiceSubject.INSTANCE.subject().subscribe(new Action1<AnnotatorServiceMessage.AnnotationMessage>() {
-//
-     //       @Override
-      //      public void call(AnnotatorServiceMessage.AnnotationMessage message) {
-      //          logger.info("===> query results for variation " +message.hgvsVariation() +" annotation " +message.vepAnnotation().toString());
-      //      }
-     //   });
-        Observable<String> variationObservable= Observable.just("17:g.41270062G>A","xxxxx");
+        Observable<String> variationObservable= Observable.just("10:g.100001483G>C","xxxxx");
         variationObservable
-                .subscribe(new Action1<String>() {
+                 .subscribe(new Action1<String>() {
                     @Override
                     public void call(String s) {
                         VariationQueryServiceSubject.INSTANCE.queryVariationDatabase(s,null);

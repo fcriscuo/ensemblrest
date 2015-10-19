@@ -5,6 +5,10 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import org.apache.log4j.Logger;
+import org.mskcc.cbio.reactive.consumer.AnnotationPersistenceConsumer;
+import org.mskcc.cbio.reactive.consumer.AnnotationResultConsumer;
+import org.mskcc.cbio.reactive.subject.EnsemblRestServiceSubject;
+import org.mskcc.cbio.reactive.subject.VariationQueryServiceSubject;
 import org.mskcc.cbio.vep.client.VepAnnotationServiceClient;
 import org.mskcc.cbio.vep.model.cvr.DmpData;
 import org.mskcc.cbio.vep.model.cvr.Result;
@@ -55,6 +59,10 @@ public class AnnotateCvrMutations {
                "A Path to a JSON file of CVR data is required" );
         this.jsonFilePath = jsonPath;
         logger.info("CVR mutations from " +jsonPath.toString() +" will be annotated");
+        // initialize subject
+        EnsemblRestServiceSubject.INSTANCE.init();
+        AnnotationPersistenceConsumer persistenceConsumer = new AnnotationPersistenceConsumer();
+        AnnotationResultConsumer resultConsumer = new AnnotationResultConsumer();
     }
 
     private void annotateMutations(){
@@ -78,11 +86,12 @@ public class AnnotateCvrMutations {
                            .subscribe(new Action1<SnpIndelExonic>() {
                                @Override
                                public void call(SnpIndelExonic snpIndelExonic) {
+                                   VariationQueryServiceSubject.INSTANCE.queryVariationDatabase(resolveGenomicVariationString(snpIndelExonic), null);
                                    // standardize on genomic based variation string
-                                   Optional<Vep> vepOpt = VepAnnotationServiceClient.annotateVariation(resolveGenomicVariationString(snpIndelExonic));
-                                   if(vepOpt.isPresent()){
-                                       logger.info(sampleId +" " + vepOpt.toString());
-                                   }
+                                  // Optional<Vep> vepOpt = VepAnnotationServiceClient.annotateVariation(resolveGenomicVariationString(snpIndelExonic));
+                                 //  if(vepOpt.isPresent()){
+                                 //      logger.info(sampleId +" " + vepOpt.toString());
+                                   //}
                                }
                            });
 

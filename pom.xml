@@ -32,11 +32,24 @@
     </pluginRepositories>
     <properties>
         <dropwizard.version>0.8.2</dropwizard.version>
-        <guava.version>19.0-rc1</guava.version>
-        <spark.version>1.4.1</spark.version>
+        <guava.version>19.0</guava.version>
+
         <jackson.version>2.5.3</jackson.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.8</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-core_2.10 -->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_2.10</artifactId>
+            <version>2.0.0-preview</version>
+        </dependency>
 
         <!--  dropwizard -->
         <dependency>
@@ -103,10 +116,11 @@
             <artifactId>scala-library</artifactId>
             <version>2.10.4</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/io.reactivex/rxjava -->
         <dependency>
             <groupId>io.reactivex</groupId>
             <artifactId>rxjava</artifactId>
-            <version>LATEST</version>
+            <version>1.1.6</version>
         </dependency>
         <dependency>
             <groupId>io.reactivex</groupId>
@@ -203,7 +217,7 @@
     <!-- plugins -->
     <plugins>
 
-    <!-- java 1.7 support -->
+    <!-- java 1.8 support -->
     <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>

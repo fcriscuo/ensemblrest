@@ -17,7 +17,7 @@
         </environment>
     </environments>
     <mappers>
-        <mapper class="org.mskcc.cbio.vep.database.dao.VepJsonCacheMapper" />
+        <mapper class="edu.jhu.fcriscu1.vep.database.dao.VepJsonCacheMapper" />
         <mapper resource="vepmap/xml/VepJsonCacheMapper.xml"/>
     </mappers>
 

@@ -8,4 +8,4 @@ The VEP annotation results persisted in the same JSON format provided by th ense
 
 An initial requirement for this project was that it be run as an independent microservice. Thus it also provides its own RESTful
 service that allow clients to request access to the persisted annotation cache and ensembl VEP annotation services. For this RESTful
-service to be abailable. The user needs to invoke the org.mskcc.cbio.vep.service.VepServiceApplication class.
+service to be abailable. The user needs to invoke the VepServiceApplication class.

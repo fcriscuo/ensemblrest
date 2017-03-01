@@ -11,3 +11,5 @@ service that allow clients to request access to the persisted annotation cache a
 service to be abailable. The user needs to invoke the VepServiceApplication class.
 
 This application was developed in 2015 using Java 7 and and early version of RxJava. Therefore it does not incorporate Java 8 capabilities or the latest features of RxJava
+
+Fred Criscuolo (sdrc1888@gmail.com)

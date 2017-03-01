@@ -29,7 +29,6 @@ Represents a prototype application that tests the use of a RESTful service for
 VEP annotation. This prototype reads in CVR mutations from a specified JSON file,
 formats each variation in HGVS formats, and issues a VEP annotation request. The VEP
 results are displayed on the console
-TODO: filter the results for the canonical transcript
  */
 public class AnnotateCvrMutations {
     private static final Logger logger = Logger.getLogger(AnnotateCvrMutations.class);

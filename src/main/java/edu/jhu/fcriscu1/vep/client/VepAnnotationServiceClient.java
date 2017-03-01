@@ -3,8 +3,9 @@ package edu.jhu.fcriscu1.vep.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
-import edu.jhu.fcriscu1.vep.model.json.Vep;
 import org.apache.log4j.Logger;
+import edu.jhu.fcriscu1.vep.model.json.Vep;
+
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;

@@ -2,6 +2,7 @@ package edu.jhu.fcriscu1.ensemblrest;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import lombok.extern.log4j.Log4j;
 import org.apache.log4j.Logger;
 
 import java.io.*;
@@ -10,9 +11,9 @@ import java.net.URL;
 import java.net.URLConnection;
 
 /**
-
  * Created by fcriscuo on 4/11/15.
  */
+@Log4j
 public class EnsemblRestService {
 
     private static final Logger logger = Logger.getLogger(EnsemblRestService.class);

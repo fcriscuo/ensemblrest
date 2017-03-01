@@ -11,8 +11,7 @@ import java.io.InputStream;
 import java.sql.SQLException;
 
 /**
-
- * Created by fcriscu1 on 11/20/14.
+ * Created by criscuof on 11/20/14.
  */
 public enum VEPSessionManager {
     /*

@@ -9,3 +9,5 @@ The VEP annotation results persisted in the same JSON format provided by th ense
 An initial requirement for this project was that it be run as an independent microservice. Thus it also provides its own RESTful
 service that allow clients to request access to the persisted annotation cache and ensembl VEP annotation services. For this RESTful
 service to be abailable. The user needs to invoke the VepServiceApplication class.
+
+This application was developed in 2015 using Java 7 and and early version of RxJava. Therefore it does not incorporate Java 8 capabilities or the latest features of RxJava
